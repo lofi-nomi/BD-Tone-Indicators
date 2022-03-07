@@ -2,7 +2,7 @@
  * @name ToneIndicators
  * @author NomadNaomie, Zuri
  * @description Displays the messages tone indicators under messages or by highlighting a tone tag will give you the defintion
- * @version 0.0.4
+ * @version 0.0.5
  * @authorId 188323207793606656, 746871249791221880
  * @authorLink https://twitter.com/NomadNaomie
  */
@@ -12,7 +12,7 @@ module.exports = (_ => {
         info: {
             name: 'ToneIndicators',
             author: 'NomadNaomie, Zuri',
-            version: '0.0.4',
+            version: '0.0.5',
             description: 'Displays the messages tone indicators under messages or by highlighting a tone tag will give you the defintion',
         },
     };
@@ -21,6 +21,7 @@ module.exports = (_ => {
         '/hj': ['half joking', '#D8FFD6'],
         '/g': ['genuine / genuine question', '#AFF8D8'],
         '/gen': ['genuine / genuine question', '#AFF8D8'],
+        '/genq': ['genuine question', '#AFF8D8'],
         '/s': ['sarcastic / sarcasm', '#FFCBC1'],
         '/sarc': ['sarcastic / sarcasm', '#FFCBC1'],
         '/srs': ['serious', '#6EB5FF'],
@@ -97,6 +98,7 @@ module.exports = (_ => {
 
                 onMessageContextMenu(e) {
                     let selectedText = document.getSelection().toString().trim();
+                    selectedText[0] == "/" ? selectedText = selectedText : selectedText = "/"+selectedText;
                     if (e.instance.props.message && selectedText && selectedText.toLowerCase() in tones) {
                         let item = [BDFDB.ContextMenuUtils.createItem(BDFDB.LibraryComponents.MenuItems.MenuItem, {
                             label: "Tone Indicator",
