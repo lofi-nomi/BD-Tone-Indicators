@@ -1,22 +1,19 @@
 /**
  * @name ToneIndicators
  * @author NomadNaomie, Zuri
- * @description Displays the messages tone indicators under messages or by highlighting a tone tag will give you the defintion
- * @version 1.0.6
+ * @description Displays the messages tone indicators or by highlighting a tone tag will give you the defintion
+ * @version 1.0.7
  * @source https://github.com/NomadNaomie/BD-Tone-Indicators
  * @updateUrl https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js
  * @authorId 188323207793606656, 746871249791221880
  * @authorLink https://twitter.com/NomadNaomie
  */
 
-const { exit } = require("process");
-
 module.exports = (_ => {
     const config = {
         info: {
             name: 'ToneIndicators',
-            authors: [
-                {
+            authors: [{
                     name: 'NomadNaomie',
                     discord_id: '188323207793606656',
                     github_username: 'NomadNaomie',
@@ -29,7 +26,7 @@ module.exports = (_ => {
                 }
             ],
             version: '1.0.7',
-            description: 'Displays the messages tone indicators under messages or by highlighting a tone tag will give you the defintion',
+            description: 'Displays the messages tone indicators or by highlighting a tone tag will give you the defintion',
             github: 'https://github.com/NomadNaomie/BD-Tone-Indicators',
             github_raw: 'https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js'
         },
@@ -39,38 +36,37 @@ module.exports = (_ => {
     if (!global.ZeresPluginLibrary) {
         return class {
             load() {
-                BdApi.showConfirmationModal(
-                    "Zere's Library Missing",
-                    `Either Click Download Now to install it or manually install it. `,
-                    {
-                        confirmText: "Automatically Install", cancelText: "Cancel", onConfirm: () => {
-                            require("request").get("https://rauenzi.github.io/BDPluginLibrary/release/0PluginLibrary.plugin.js",
-                                async (error, result, body) => {
-                                    !error && result.statusCode == 200 && body
-                                        ? require("fs").writeFile(require("path").join(BdApi.Plugins.folder, "0PluginLibrary.plugin.js"), body,
-                                            _ => BdApi.showToast("Finished downloading Zere's Plugin Library", { type: "success" }))
-                                        : BdApi.showToast("Failed to download Zere's Plugin Library", { type: "error" });
-                                });
-                        }
-                    });
+                BdApi.showConfirmationModal("Zere's Library Missing", "Either Click Download Now to install it or manually install it. ", {
+                    confirmText: "Automatically Install",
+                    cancelText: "Cancel",
+                    onConfirm: () => {
+                        require("request").get("https://rauenzi.github.io/BDPluginLibrary/release/0PluginLibrary.plugin.js",
+                            async(error, result, body) => {
+                                !error && result.statusCode == 200 && body ?
+                                    require("fs").writeFile(require("path").join(BdApi.Plugins.folder, "0PluginLibrary.plugin.js"), body,
+                                        _ => BdApi.showToast("Finished downloading Zere's Plugin Library", { type: "success" })) :
+                                    BdApi.showToast("Failed to download Zere's Plugin Library", { type: "error" });
+                            });
+                    }
+                });
             }
         };
     } else {
-        return (([Plugin, zlib]) => {
-            const { WebpackModules, Patcher, ContextMenu, } = zlib;
+        return (([Plugin, Zlib]) => {
+            const { WebpackModules, Patcher, ContextMenu, } = Zlib;
             return class ToneIndicators extends Plugin {
-                onLoad() {
-                }
+                onLoad() {}
 
                 onStart() {
                     this.onStop();
                     this.patchContextMenus();
                     this.patchMessages();
-
                 }
+
                 onStop() {
                     Patcher.unpatchAll();
                 }
+
                 patchContextMenus() {
                     ContextMenu.getDiscordMenu("MessageContextMenu").then(menu => {
                         Patcher.after(menu, "default", (_, [props], ret) => {
@@ -79,13 +75,15 @@ module.exports = (_ => {
                             if (!(selectedText && selectedText.toLowerCase() in toneList)) { return; }
                             ret.props.children.push(ContextMenu.buildMenuItem({ type: "separator" }))
                             ret.props.children.push(ContextMenu.buildMenuItem({
-                                label: "Tone Indicator", action: () => {
+                                label: "Tone Indicator",
+                                action: () => {
                                     BdApi.showToast(selectedText + " -  " + toneList[selectedText.toLowerCase()][0]);
                                 }
                             }));
                         });
                     });
                 }
+
                 patchMessages() {
                     const MessageContent = WebpackModules.find(m => m.type && m.type.displayName === 'MessageContent');
                     const ToolTip = WebpackModules.getByProps("TooltipContainer").TooltipContainer
@@ -108,9 +106,7 @@ module.exports = (_ => {
                         })
                     })
                 }
-            };
+            }
         })(global.ZeresPluginLibrary.buildPlugin(config));
     }
 })();
-
-
