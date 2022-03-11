@@ -2,7 +2,7 @@
  * @name ToneIndicators
  * @author NomadNaomie, Zuri
  * @description Displays the messages tone indicators or by highlighting a tone tag will give you the defintion
- * @version 1.0.7
+ * @version 1.0.8
  * @source https://github.com/NomadNaomie/BD-Tone-Indicators
  * @updateUrl https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js
  * @authorId 188323207793606656, 746871249791221880
@@ -25,7 +25,7 @@ module.exports = (_ => {
                     github_username: 'Zuriix',
                 }
             ],
-            version: '1.0.7',
+            version: '1.0.8',
             description: 'Displays the messages tone indicators or by highlighting a tone tag will give you the defintion',
             github: 'https://github.com/NomadNaomie/BD-Tone-Indicators',
             github_raw: 'https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js'
@@ -67,6 +67,11 @@ module.exports = (_ => {
                     Patcher.unpatchAll();
                 }
 
+                cbg(h, a = "0.5") {
+                    let bg = '0x' + h.substring(1);
+                    return 'rgba(' + [(bg >> 16) & 255, (bg >> 8) & 255, bg & 255].join(',') + `,${a})`;
+                }
+
                 patchContextMenus() {
                     ContextMenu.getDiscordMenu("MessageContextMenu").then(menu => {
                         Patcher.after(menu, "default", (_, [props], ret) => {
@@ -97,9 +102,9 @@ module.exports = (_ => {
                             return content.split(' ').map(word => {
                                 current++
                                 let currentWord = current == 1 ? word : " " + word,
-                                    tone = toneList[word];
+                                    tone = toneList[word.toLowerCase()];
                                 return tone ? BdApi.React.createElement("span", {
-                                    style: { color: tone[1], display: "inline-block" },
+                                    style: { "background-color": this.cbg(tone[1], 0.1), color: tone[1], display: "inline-block", "font-size": "12px", "font-weight": "bold", "border-radius": "6px", "padding-left": "4px", "padding-right": "4px", "margin": "1px" },
                                     children: BdApi.React.createElement(ToolTip, { text: `${word} - ${tone[0]}` }, currentWord)
                                 }) : currentWord;
                             })
