@@ -43,18 +43,29 @@ module.exports = (_ => {
             }
         ],
         defaultConfig: [{
-            type: "switch",
-            id: "backgroundDisabled",
-            name: "Remove Background Color",
-            note: "Removes the background color from indicators in messages.",
-            value: false,
-        }, {
-            type: "slider",
-            id: "backgroundTransparency",
-            name: "Background Transparency",
-            note: "Changes the transparency of the indicators background color.",
-            value: 10,
-        }],
+                type: 'category',
+                id: 'background',
+                name: 'Background settings',
+                collapsible: true,
+                shown: false,
+                settings: [{
+                        type: "switch",
+                        id: "disabled",
+                        name: "Remove Background Color",
+                        note: "Removes the background color from indicators in messages.",
+                        value: false,
+                    },
+                    {
+                        type: "slider",
+                        id: "transparency",
+                        name: "Background Transparency",
+                        note: "Changes the transparency of the indicators background color.",
+                        value: 10,
+                    }
+                ]
+            }
+
+        ],
     };
     const toneList = { '/j': ['joking', '#BFFCC6'], '/hj': ['half joking', '#D8FFD6'], '/g': ['genuine / genuine question', '#AFF8D8'], '/gen': ['genuine / genuine question', '#AFF8D8'], '/genq': ['genuine question', '#AFF8D8'], '/s': ['sarcastic / sarcasm', '#FFCBC1'], '/sarc': ['sarcastic / sarcasm', '#FFCBC1'], '/srs': ['serious', '#6EB5FF'], '/nsrs': ['not serious', '#F6A6FF'], '/lh': ['light hearted', '#ACE6FF'], '/ij': ['inside joke', '#E7FFAC'], '/ref': ['reference', '#AFCBFF'], '/t': ['teasing', '#FFFFD1'], '/nm': ['not mad', '#DCD3FF'], '/lu': ['a little upset', '#FFF5BA'], '/nf': ['not forced', '#DEFDE0'], '/nbh': ['nobody here', '#FCF7DE'], '/nsb': ['not subtweeting', '#DEF3FD'], '/nay': ['not at you', '#F0DEFD'], '/ay': ['at you', '#FDDFDF'], '/nbr': ['not being rude', '#9ADBB3'], '/ot': ['off topic', '#E7FFAC'], '/th': ['threat', '#FFABAB'], '/cb': ['clickbait', '#F3FFE3'], '/f': ['fake', '#85E3FF'], '/q': ['quote', '#D5AAFF'], '/l': ['lyrics', '#97A2FF'], '/ly': ['lyrics', '#97A2FF'], '/c': ['copypasta', '#DBFFD6'], '/m': ['metaphor / metaphorically', '#FBE4FF'], '/li': ['literal / literally', '#BED2FE'], '/rt': ['rhetorical question', '#A79AFF'], '/rh': ['rhetorical question', '#A79AFF'], '/hyp': ['hyperbole', '#F6F9FF'], '/p': ['platonic', '#B5CCFE'], '/r': ['romantic', '#FFCCF9'], '/a': ['alterous', '#C7D9FE'], '/sx': ['sexual intent', '#FF9CEE'], '/x': ['sexual intent', '#FF9CEE'], '/nsx': ['non-sexual intent', '#FFBEBC'], '/ns': ['non-sexual intent', '#FFBEBC'], '/nx': ['non-sexual intent', '#FFBEBC'], '/pc': ['positive connotation', '#84D3B2'], '/pos': ['positive connotation', '#84D3B2'], '/nc': ['negative connotation', '#FFCCBB'], '/neg': ['negative connotation', '#FFCCBB'], '/neu': ['neutral / neutral connotation', '#E3ECFF'] };
 
@@ -105,7 +116,8 @@ module.exports = (_ => {
                                 let currentWord = current == 1 ? word : " " + word;
                                 let tone = toneList[word.toLowerCase()];
                                 return tone ? BdApi.React.createElement("span", {
-                                    style: { "background-color": !this.settings.backgroundDisabled ? this.generateBackgroundColor(tone[1], this.settings.backgroundTransparency / 100 || 0.1) : 'transparent', color: tone[1], display: "inline-block", "font-size": "12px", "font-weight": "bold", "border-radius": "6px", "padding-left": "3px", "padding-right": "3px", "margin-left": "4px" },
+                                    style:
+                                        !this.settings.background.disabled ? ({ "background-color": this.generateBackgroundColor(tone[1], this.settings.background.transparency / 100 || 0.1), "color": tone[1], "display": "inline-block", "font-size": "12px", "font-weight": "bold", "border-radius": "6px", "padding-left": "3px", "padding-right": "3px", "margin-left": "4px" }) : ({ "display": "inline-block", "color": tone[1] }),
                                     children: BdApi.React.createElement(ToolTip, { text: `${word.toLowerCase()} - ${tone[0]}` }, currentWord)
                                 }) : currentWord;
                             })
