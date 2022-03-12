@@ -1,6 +1,10 @@
 {
     "currentVersionInfo": {
-        "version": "1.0.6",
-        "hasShownChangelog": true
+        "version": "1.0.9",
+        "hasShownChangelog": false
+    },
+    "settings": {
+        "backgroundDisabled": false,
+        "backgroundTransparency": 15.232974910394217
     }
 }
