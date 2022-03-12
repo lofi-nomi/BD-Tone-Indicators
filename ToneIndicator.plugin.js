@@ -83,7 +83,7 @@ module.exports = (_ => {
                             ret.props.children.push(ContextMenu.buildMenuItem({
                                 label: "Tone Indicator",
                                 action: () => {
-                                    BdApi.showToast(selectedText + " -  " + toneList[selectedText.toLowerCase()][0]);
+                                    BdApi.showToast(selectedText.toLowerCase() + " -  " + toneList[selectedText.toLowerCase()][0]);
                                 }
                             }));
                         });
