@@ -105,7 +105,7 @@ module.exports = (_ => {
                                 let currentWord = current == 1 ? word : " " + word;
                                 let tone = toneList[word.toLowerCase()];
                                 return tone ? BdApi.React.createElement("span", {
-                                    style: { "background-color": !this.settings.backgroundDisabled ? this.generateBackgroundColor(tone[1], this.settings.backgroundTransparency / 100 || 0.1) : 'transparent', color: tone[1], display: "inline-block", "font-size": "12px", "font-weight": "bold", "border-radius": "6px", "padding-left": "4px", "padding-right": "4px", "margin": "1px" },
+                                    style: { "background-color": !this.settings.backgroundDisabled ? this.generateBackgroundColor(tone[1], this.settings.backgroundTransparency / 100 || 0.1) : 'transparent', color: tone[1], display: "inline-block", "font-size": "12px", "font-weight": "bold", "border-radius": "6px", "padding-left": "3px", "padding-right": "3px", "margin-left": "4px" },
                                     children: BdApi.React.createElement(ToolTip, { text: `${word.toLowerCase()} - ${tone[0]}` }, currentWord)
                                 }) : currentWord;
                             })
