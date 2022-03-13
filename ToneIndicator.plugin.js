@@ -2,14 +2,14 @@
  * @name ToneIndicators
  * @author NomadNaomie, Zuri
  * @description Displays the messages tone indicators or by highlighting a tone tag will give you the defintion
- * @version 1.0.9
+ * @version 1.1.0
  * @source https://github.com/NomadNaomie/BD-Tone-Indicators
  * @updateUrl https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js
  * @authorId 188323207793606656, 746871249791221880
  * @authorLink https://twitter.com/NomadNaomie
  */
 
-module.exports = (_ => {
+ module.exports = (_ => {
     const config = {
         info: {
             name: 'ToneIndicators',
@@ -26,7 +26,7 @@ module.exports = (_ => {
                     website: "https://zuriix.github.io/"
                 }
             ],
-            version: '1.0.9',
+            version: '1.1.0',
             description: 'Displays the messages tone indicators or by highlighting a tone tag will give you the defintion',
             github_raw: 'https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js',
             github: 'https://github.com/NomadNaomie/BD-Tone-Indicators'
@@ -34,7 +34,7 @@ module.exports = (_ => {
         changelog: [{
                 title: "Added",
                 type: "added",
-                items: ["Added a changelog!?", "Added some smancy new settings!"]
+                items: ["Added a changelog!?", "Added some smancy new settings!", "Added a new lightmode toggle for better visibility!"]
             },
             {
                 title: "Removed",
@@ -75,10 +75,23 @@ module.exports = (_ => {
                 name: "Display tooltip under message",
                 note: "Displays tooltip under the message instead of above it.",
                 value: true,
-            }, ]
+            }]
+        },{
+            type: 'category',
+            id: 'tonecolor',
+            name: 'Tone colour settings',
+            collapsible: true,
+            shown: false,
+            settings: [{
+                type: "switch",
+                id: "lightmode",
+                name: "Light Mode",
+                note: "Changes the tone indicators to use a light color scheme.",
+                value: false,
+            }]
         }],
     };
-    const toneList = { '/j': ['joking', '#BFFCC6'], '/hj': ['half joking', '#D8FFD6'], '/g': ['genuine / genuine question', '#AFF8D8'], '/gen': ['genuine / genuine question', '#AFF8D8'], '/genq': ['genuine question', '#AFF8D8'], '/s': ['sarcastic / sarcasm', '#FFCBC1'], '/sarc': ['sarcastic / sarcasm', '#FFCBC1'], '/srs': ['serious', '#6EB5FF'], '/nsrs': ['not serious', '#F6A6FF'], '/lh': ['light hearted', '#ACE6FF'], '/ij': ['inside joke', '#E7FFAC'], '/ref': ['reference', '#AFCBFF'], '/t': ['teasing', '#FFFFD1'], '/nm': ['not mad', '#DCD3FF'], '/lu': ['a little upset', '#FFF5BA'], '/nf': ['not forced', '#DEFDE0'], '/nbh': ['nobody here', '#FCF7DE'], '/nsb': ['not subtweeting', '#DEF3FD'], '/nay': ['not at you', '#F0DEFD'], '/ay': ['at you', '#FDDFDF'], '/nbr': ['not being rude', '#9ADBB3'], '/ot': ['off topic', '#E7FFAC'], '/th': ['threat', '#FFABAB'], '/cb': ['clickbait', '#F3FFE3'], '/f': ['fake', '#85E3FF'], '/q': ['quote', '#D5AAFF'], '/l': ['lyrics', '#97A2FF'], '/ly': ['lyrics', '#97A2FF'], '/c': ['copypasta', '#DBFFD6'], '/m': ['metaphor / metaphorically', '#FBE4FF'], '/li': ['literal / literally', '#BED2FE'], '/rt': ['rhetorical question', '#A79AFF'], '/rh': ['rhetorical question', '#A79AFF'], '/hyp': ['hyperbole', '#F6F9FF'], '/p': ['platonic', '#B5CCFE'], '/r': ['romantic', '#FFCCF9'], '/a': ['alterous', '#C7D9FE'], '/sx': ['sexual intent', '#FF9CEE'], '/x': ['sexual intent', '#FF9CEE'], '/nsx': ['non-sexual intent', '#FFBEBC'], '/ns': ['non-sexual intent', '#FFBEBC'], '/nx': ['non-sexual intent', '#FFBEBC'], '/pc': ['positive connotation', '#84D3B2'], '/pos': ['positive connotation', '#84D3B2'], '/nc': ['negative connotation', '#FFCCBB'], '/neg': ['negative connotation', '#FFCCBB'], '/neu': ['neutral / neutral connotation', '#E3ECFF'] };
+    const toneList = { '/j': ['joking', '#BFFCC6', '#0d7a1a'], '/hj': ['half joking', '#D8FFD6','#0d7a1a'], '/g': ['genuine / genuine question', '#AFF8D8','#089c5b'], '/gen': ['genuine / genuine question', '#AFF8D8','#089c5b'], '/genq': ['genuine question', '#AFF8D8','#089c5b'], '/s': ['sarcastic / sarcasm', '#FFCBC1','#cf3d21'], '/sarc': ['sarcastic / sarcasm', '#FFCBC1','#cf3d21'], '/srs': ['serious', '#6EB5FF','#29629e'], '/nsrs': ['not serious', '#F6A6FF',"#a639b3"], '/lh': ['light hearted', '#ACE6FF','#217ca3'], '/ij': ['inside joke', '#E7FFAC', '#6d9114'], '/ref': ['reference', '#AFCBFF','#144091'], '/t': ['teasing', '#FFFFD1','##c7c710'], '/nm': ['not mad', '#DCD3FF','#3d1bc2'], '/lu': ['a little upset', '#FFF5BA','#8f7c0b'], '/nf': ['not forced', '#DEFDE0','#089611'], '/nbh': ['nobody here', '#FCF7DE','#7a6600'], '/nsb': ['not subtweeting', '#DEF3FD','#00405e'], '/nay': ['not at you', '#F0DEFD','#7a02d1'], '/ay': ['at you', '#FDDFDF','#8c0707'], '/nbr': ['not being rude', '#9ADBB3','#048a38'], '/ot': ['off topic', '#E7FFAC','#476108'], '/th': ['threat', '#FFABAB','#b50e0e'], '/cb': ['clickbait', '#F3FFE3','#569106'], '/f': ['fake', '#85E3FF','#066480'], '/q': ['quote', '#D5AAFF','##3b086e'], '/l': ['lyrics', '#97A2FF','#0e1873'], '/ly': ['lyrics', '#97A2FF','#0e1873'], '/c': ['copypasta', '#DBFFD6','#1f8c0f'], '/m': ['metaphor / metaphorically', '#FBE4FF','#750987'], '/li': ['literal / literally', '#BED2FE','#0a328a'], '/rt': ['rhetorical question', '#A79AFF','#1c099c'], '/rh': ['rhetorical question', '#A79AFF','#1c099c'], '/hyp': ['hyperbole', '#F6F9FF','#2a3c5e'], '/p': ['platonic', '#B5CCFE','#2260e6'], '/r': ['romantic', '#FFCCF9','#bf19ac'], '/a': ['alterous', '#C7D9FE','#1458e3'], '/sx': ['sexual intent', '#FF9CEE','#780b65'], '/x': ['sexual intent', '#FF9CEE','#780b65'], '/nsx': ['non-sexual intent', '#FFBEBC','#7a201d'], '/ns': ['non-sexual intent', '#FFBEBC','#7a201d'], '/nx': ['non-sexual intent', '#FFBEBC','#7a201d'], '/pc': ['positive connotation', '#84D3B2','#0e9e62'], '/pos': ['positive connotation', '#84D3B2','#0e9e62'], '/nc': ['negative connotation', '#FFCCBB','#87452f'], '/neg': ['negative connotation', '#FFCCBB','#87452f'], '/neu': ['neutral / neutral connotation', '#E3ECFF','#315ab0'] };
 
     if (!global.ZeresPluginLibrary) {
         return class { load() { BdApi.showConfirmationModal("Zere's Library Missing", "Either Click Download Now to install it or manually install it. ", { confirmText: "Automatically Install", cancelText: "Cancel", onConfirm: () => { require("request").get("https://rauenzi.github.io/BDPluginLibrary/release/0PluginLibrary.plugin.js", async(error, result, body) => {!error && result.statusCode == 200 && body ? require("fs").writeFile(require("path").join(BdApi.Plugins.folder, "0PluginLibrary.plugin.js"), body, _ => BdApi.showToast("Finished downloading Zere's Plugin Library", { type: "success" })) : BdApi.showToast("Failed to download Zere's Plugin Library", { type: "error" }) }) } }) } };
@@ -88,7 +101,7 @@ module.exports = (_ => {
             return class ToneIndicators extends Plugin {
 
                 getSettingsPanel() { const panel = this.buildSettingsPanel(); return panel.getElement(); }
-                generateBackgroundColor(hex, alpha = "0.5") { let bg = '0x' + hex.substring(1); return 'rgba(' + [(bg >> 16) & 255, (bg >> 8) & 255, bg & 255].join(',') + `,${alpha})`; }
+                generateBackgroundColor(hex, alpha = "0.5") {let bg = '0x' + hex.substring(1); return 'rgba(' + [(bg >> 16) & 255, (bg >> 8) & 255, bg & 255].join(',') + `,${alpha})`; }
 
                 onLoad() {};
                 onStart() { this.onStop(), this.patchContextMenus(), this.patchMessages(); }
@@ -128,7 +141,7 @@ module.exports = (_ => {
                                 let tone = toneList[word.toLowerCase()];
                                 return tone ? BdApi.React.createElement("span", {
                                     style:
-                                        !this.settings.background.disabled ? ({ "background-color": this.generateBackgroundColor(tone[1], this.settings.background.transparency / 100 || 0.1), "color": tone[1], "display": "inline-block", "font-size": "12px", "font-weight": "bold", "border-radius": "6px", "padding-left": "3px", "padding-right": "3px", "margin-left": "4px" }) : ({ "display": "inline-block", "color": tone[1] }),
+                                        !this.settings.background.disabled ? ({ "background-color": this.generateBackgroundColor(this.settings.tonecolor.lightmode ? tone[2] : tone[1], this.settings.background.transparency / 100 || 0.1), "color": this.settings.tonecolor.lightmode ? tone[2] : tone[1], "display": "inline-block", "font-size": "12px", "font-weight": "bold", "border-radius": "6px", "padding-left": "3px", "padding-right": "3px", "margin-left": "4px" }) : ({ "display": "inline-block", "color": this.settings.tonecolor.lightmode ? tone[2] : tone[1] }),
                                     children: BdApi.React.createElement(ToolTip, { "position": this.settings.tooltip.bottom ? "bottom" : "top", "text": `${word.toLowerCase()} - ${tone[0]}` }, currentWord)
                                 }) : currentWord;
                             })
