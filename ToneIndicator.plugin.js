@@ -163,11 +163,10 @@
                             selectedText = selectedText.match((/^[^\/]/g, '/')) ? selectedText : "/" + selectedText;
                             let tone = this.getTone(selectedText.toLowerCase());
                             if (typeof tone === "string") return;
-                            ret.props.children.push(ContextMenu.buildMenuItem({ type: "separator" }))
-                            ret.props.children.push(ContextMenu.buildMenuItem({
+                            ret.props.children.push(ContextMenu.buildMenuItem({ type: "separator" }), ContextMenu.buildMenuItem({
                                 label: "Tone Indicator",
                                 action: () => BdApi.showToast(`${tone.ref} - ${tone.name}`),
-                            }));
+                            }))
                         });
                     });
 
@@ -178,7 +177,7 @@
                         let temp = ret.props.children[0];
                         ret.props.children[0] = temp.map(content => {
                             if (!content.length > 0) return;
-                            let current = 0;
+                            let current = 0
                             return content.split(' ').map(word => {
                                 current++
                                 let currentWord = current == 1 ? word : " " + word;
