@@ -23,7 +23,7 @@
         "/lu": { "name": "a little upset", "colors": ['#FFF5BA', '#8f7c0b']},
         "/nf": { "name": "not forced", "colors": ['#DEFDE0', '#089611']},
         "/nbh": { "name": "nobody here", "colors": ['#FCF7DE', '#7a6600']},
-        "/sb": { "name": "not subtweeting", "colors": ['#DEF3FD', '#00405e']},
+        "/nsb": { "name": "not subtweeting", "colors": ['#DEF3FD', '#00405e']},
         "/nay": { "name": "not at you", "colors": ['#F0DEFD', '#7a02d1']},
         "/ay": { "name": "at you", "colors": ['#FDDFDF', '#8c0707']},
         "/nbr": { "name": "not being rude", "colors": ['#9ADBB3', '#048a38']},
