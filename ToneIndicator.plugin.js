@@ -176,6 +176,7 @@
                         if (ret.props.children[0].filter(n => typeof n == "string").length == 0) return;
                         let temp = ret.props.children[0];
                         ret.props.children[0] = temp.map(content => {
+                            if(content.props) return content;
                             if (!content.length > 0) return;
                             let current = 0
                             return content.split(' ').map(word => {
