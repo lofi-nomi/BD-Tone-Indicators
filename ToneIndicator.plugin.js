@@ -129,7 +129,8 @@
         {
             type: 'category', id: 'tonecolor', name: 'Tone colour settings', collapsible: true, shown: false,
             settings: [
-                { type: "switch", id: "lightmode", name: "Light Mode", note: "Changes the tone indicators to use a light color scheme.", value: false }
+                { type: "switch", id: "lightmode", name: "Light Mode", note: "Changes the tone indicators to use a light color scheme.", value: false },
+                { type: "switch", id: "autochange", name: "Automatic Mode", note: "Changes the tone indicators depending on the current color scheme.", value: true }
             ]
         },
     ]
@@ -149,13 +150,18 @@
 
                 /* ------------------------------------ USER FUNCTIONS ------------------------------------ */
                 generateBackgroundColor(hex, alpha = "0.5") {let bg = '0x' + hex.substring(1); return 'rgba(' + [(bg >> 16) & 255, (bg >> 8) & 255, bg & 255].join(',') + `,${alpha})`; }
-                getTone(tag){let data = toneMap[tag.toLowerCase()];if (!data) return;return { ref: tag, name: data.name, color: this.settings.tonecolor.lightmode ? data.colors[1] : data.colors[0]}}
+                getTone(tag){
+                    let data = toneMap[tag.toLowerCase()];
+                    let darkTheme = document.getElementsByClassName("theme-dark").length>0;
+                    this.settings.tonecolor.lightmode = !darkTheme;
+                    if (!data) return;
+                    return { ref: tag, name: data.name, color: this.settings.tonecolor.autochange ? (darkTheme?data.colors[0]:data.colors[1]) : (this.settings.tonecolor.lightmode ? data.colors[1] : data.colors[0])}}
 
                 /* ------------------------------------ SYSTEM FUNCTIONS ------------------------------------ */
                 onLoad() {};
                 onStop() { Patcher.unpatchAll(); }
                 onStart() { this.onStop()
-                
+
                     /* ------------------------------------ CONTEXT MENU PATCH ------------------------------------ */
                     ContextMenu.getDiscordMenu("MessageContextMenu").then(menu => {
                         Patcher.after(menu, "default", (_, [props], ret) => {
@@ -176,6 +182,7 @@
                         if (ret.props.children[0].filter(n => typeof n == "string").length == 0) return;
                         let temp = ret.props.children[0];
                         ret.props.children[0] = temp.map(content => {
+                            if(content.props) return content;
                             if (!content.length > 0) return;
                             let current = 0
                             return content.split(' ').map(word => {
