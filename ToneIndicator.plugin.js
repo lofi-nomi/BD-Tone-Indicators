@@ -145,7 +145,8 @@
             const { WebpackModules, ContextMenu } = Zlib;
             return class ToneIndicators extends Plugin {
 
-                generateBackgroundColor(r,e="0.5") {generateBackgroundColor=((r,e="0.5")=>{let n="0x"+r.substring(1);return"rgba("+[n>>16&255,n>>8&255,255&n].join(",")+`,${e})`});}
+
+                generateBackgroundColor(r,e="0.5"){let n="0x"+r.substring(1);return"rgba("+[n>>16&255,n>>8&255,255&n].join(",")+`,${e})`}
                 getTone(t) {if(!t)return;let e=toneMap[t.toLowerCase()];if(!e)return{isTag:!1,text:t};let o=document.getElementsByClassName("theme-dark").length>0;this.settings.tonecolor.lightmode=!o;let n=this.settings.tonecolor.autochange?o?e.colors[0]:e.colors[1]:this.settings.tonecolor.lightmode?e.colors[1]:e.colors[0],i={isTag:!0,text:t,description:e.name,tag:BdApi.React.createElement("span",{style:this.settings.background.disabled?{display:"inline-block",color:n}:{"background-color":this.generateBackgroundColor(n,this.settings.background.transparency/100||.1),color:n,display:"inline-block","font-size":"12px","font-weight":"bold","border-radius":"6px","padding-left":"3px","padding-right":"3px","margin-left":"4px"},children:BdApi.React.createElement(WebpackModules.getByProps("TooltipContainer").TooltipContainer,{position:this.settings.tooltip.bottom?"bottom":"top",text:`${e.name}`},t)})};return i}
                 
                 getSettingsPanel() { const panel = this.buildSettingsPanel(); return panel.getElement(); }
@@ -194,12 +195,8 @@
 })();
 
 /*
-
-
   _,-=._              /|_/|
   `-.}   `=._,.-=-._.,  @ @._,
      `._ _,-.   )      _,.-'
         `    G.m-"^m`m'        
-
-
 */
