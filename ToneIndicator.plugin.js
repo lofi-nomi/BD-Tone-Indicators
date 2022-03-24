@@ -2,7 +2,7 @@
  * @name ToneIndicators
  * @author NomadNaomie, Zuri
  * @description Displays the messages tone indicators or by highlighting a tone tag will give you the defintion
- * @version 1.1.1
+ * @version 1.1.2
  * @source https://github.com/NomadNaomie/BD-Tone-Indicators
  * @updateUrl https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js
  * @authorId 188323207793606656, 746871249791221880
@@ -73,7 +73,7 @@
                 {name: 'NomadNaomie', discord_id: '188323207793606656', github_username: 'NomadNaomie', twitter_username: 'NomadNaomie'},
                 {name: 'Zuri', discord_id: '746871249791221880', github_username: 'Zuriix', website: "https://zuriix.github.io/"}
             ],
-            version: '1.1.1',
+            version: '1.1.2',
             description: 'Displays the messages tone indicators or by highlighting a tone tag will give you the defintion',
             github_raw: 'https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js',
             github: 'https://github.com/NomadNaomie/BD-Tone-Indicators'
@@ -82,10 +82,10 @@
 
 
             /* Added Changlog*/
-            // {
-            //     title: "Added", type: "added",
-            //     items: []
-            // },
+            {
+                title: "Added", type: "added",
+                items: ["Fixed message patching", "Fixed Multiline & Content issues",]
+            },
 
 
             /* Removed Changelog*/
@@ -96,10 +96,10 @@
 
 
             /* Fixed Changelog*/
-            {
-                title: "Changed", type: "improved",
-                items: ["Worked a little magic :D"]
-            }
+            // {
+            //     title: "Changed", type: "improved",
+            //     items: []
+            // }
 
 
         ],
@@ -142,62 +142,50 @@
         return class { load() { BdApi.showConfirmationModal("Zere's Library Missing", "Either Click Download Now to install it or manually install it. ", { confirmText: "Automatically Install", cancelText: "Cancel", onConfirm: () => { require("request").get("https://rauenzi.github.io/BDPluginLibrary/release/0PluginLibrary.plugin.js", async(error, result, body) => {!error && result.statusCode == 200 && body ? require("fs").writeFile(require("path").join(BdApi.Plugins.folder, "0PluginLibrary.plugin.js"), body, _ => BdApi.showToast("Finished downloading Zere's Plugin Library", { type: "success" })) : BdApi.showToast("Failed to download Zere's Plugin Library", { type: "error" }) }) } }) } };
     } else {
         return (([Plugin, Zlib]) => {
-            const { WebpackModules, Patcher, ContextMenu, Logger: { error: Error } } = Zlib;
+            const { WebpackModules, ContextMenu } = Zlib;
             return class ToneIndicators extends Plugin {
 
-                /* ------------------------------------ ZLIB FUNCTIONS ------------------------------------ */
+                generateBackgroundColor(r,e="0.5") {generateBackgroundColor=((r,e="0.5")=>{let n="0x"+r.substring(1);return"rgba("+[n>>16&255,n>>8&255,255&n].join(",")+`,${e})`});}
+                getTone(t) {if(!t)return;let e=toneMap[t.toLowerCase()];if(!e)return{isTag:!1,text:t};let o=document.getElementsByClassName("theme-dark").length>0;this.settings.tonecolor.lightmode=!o;let n=this.settings.tonecolor.autochange?o?e.colors[0]:e.colors[1]:this.settings.tonecolor.lightmode?e.colors[1]:e.colors[0],i={isTag:!0,text:t,description:e.name,tag:BdApi.React.createElement("span",{style:this.settings.background.disabled?{display:"inline-block",color:n}:{"background-color":this.generateBackgroundColor(n,this.settings.background.transparency/100||.1),color:n,display:"inline-block","font-size":"12px","font-weight":"bold","border-radius":"6px","padding-left":"3px","padding-right":"3px","margin-left":"4px"},children:BdApi.React.createElement(WebpackModules.getByProps("TooltipContainer").TooltipContainer,{position:this.settings.tooltip.bottom?"bottom":"top",text:`${e.name}`},t)})};return i}
+                
                 getSettingsPanel() { const panel = this.buildSettingsPanel(); return panel.getElement(); }
+                onStop() { BdApi.Patcher.unpatchAll("ToneIndicator"); }
+                onStart() { this.onStop(); this.patchMessageContent(); this.patchContextMenu(); }
 
-                /* ------------------------------------ USER FUNCTIONS ------------------------------------ */
-                generateBackgroundColor(hex, alpha = "0.5") {let bg = '0x' + hex.substring(1); return 'rgba(' + [(bg >> 16) & 255, (bg >> 8) & 255, bg & 255].join(',') + `,${alpha})`; }
-                getTone(tag){
-                    let data = toneMap[tag.toLowerCase()];
-                    let darkTheme = document.getElementsByClassName("theme-dark").length>0;
-                    this.settings.tonecolor.lightmode = !darkTheme;
-                    if (!data) return;
-                    return { ref: tag, name: data.name, color: this.settings.tonecolor.autochange ? (darkTheme?data.colors[0]:data.colors[1]) : (this.settings.tonecolor.lightmode ? data.colors[1] : data.colors[0])}}
+                patchMessageContent() {
+                    const MessageContent = WebpackModules.find(e => e.type && "MessageContent" === e.type.displayName);
+                    BdApi.Patcher.after("ToneIndicator", MessageContent, "type", (_, [props], ret) => {
+                        if (props.message.content && props.message.content.includes("/") && props.message && ret) {
+                            if (!ret.props.children[0]) return;
+                            ret.props.children[0] = ret.props.children[0].map(child => 
+                                typeof child == "string" ? child.split("\n").map(line => {
+                                let current = 0, compile = [];
+                                return line.split(" ").forEach(word => {
+                                    if (0 === word.length) return word; 
+                                    current++;
+                                    let splitChar = line.split(" ").length === current ? "\n" : " ", tone = this.getTone(word);
+                                    compile.push(tone.isTag ? tone.tag : tone.text), compile.push(splitChar)
+                                }), compile
+                            }) : child)
+                        }
+                    })
+                }
 
-                /* ------------------------------------ SYSTEM FUNCTIONS ------------------------------------ */
-                onLoad() {};
-                onStop() { Patcher.unpatchAll(); }
-                onStart() { this.onStop()
-
-                    /* ------------------------------------ CONTEXT MENU PATCH ------------------------------------ */
+                patchContextMenu() {
                     ContextMenu.getDiscordMenu("MessageContextMenu").then(menu => {
-                        Patcher.after(menu, "default", (_, [props], ret) => {
-                            let selectedText = document.getSelection().toString().trim();
-                            selectedText = selectedText.match((/^[^\/]/g, '/')) ? selectedText : "/" + selectedText;
-                            let tone = this.getTone(selectedText.toLowerCase());
-                            if (typeof tone === "string") return;
-                            ret.props.children.push(ContextMenu.buildMenuItem({ type: "separator" }), ContextMenu.buildMenuItem({
+                        BdApi.Patcher.after("ToneIndicator", menu, "default", (_, [props], ret) => {
+                            let textSelection = document.getSelection().toString().trim();
+                            if(!textSelection) return;
+                            textSelection = textSelection.match("/") ? textSelection : "/" + textSelection;
+                            let tone = this.getTone(textSelection.toLowerCase());
+                            typeof tone != "string" && ret.props.children.push(ContextMenu.buildMenuItem({
+                                type: "separator"
+                            }), ContextMenu.buildMenuItem({
                                 label: "Tone Indicator",
-                                action: () => BdApi.showToast(`${tone.ref} - ${tone.name}`),
+                                action: () => BdApi.showToast(`${tone.text} - ${tone.description}`)
                             }))
-                        });
-                    });
-
-                    /* ------------------------------------ MESSAGE CONTENT PATCH ------------------------------------ */
-                    Patcher.after(WebpackModules.find(m => m.type && m.type.displayName === 'MessageContent'), "type", (_, [props], ret) => {
-                        if (!props.message.content || !props.message.content.includes('/')) return;
-                        if (ret.props.children[0].filter(n => typeof n == "string").length == 0) return;
-                        let temp = ret.props.children[0];
-                        ret.props.children[0] = temp.map(content => {
-                            if(content.props) return content;
-                            if (!content.length > 0) return;
-                            let current = 0
-                            return content.split(' ').map(word => {
-                                current++
-                                let currentWord = current == 1 ? word : " " + word;
-                                let tone = this.getTone(word.toLowerCase())
-                                return tone ? BdApi.React.createElement("span", {
-                                    style:
-                                        !this.settings.background.disabled ? ({ "background-color": this.generateBackgroundColor(tone.color, this.settings.background.transparency / 100 || 0.1), "color": tone.color, "display": "inline-block", "font-size": "12px", "font-weight": "bold", "border-radius": "6px", "padding-left": "3px", "padding-right": "3px", "margin-left": "4px" }) : ({ "display": "inline-block", "color": tone.color }),
-                                    children: BdApi.React.createElement(WebpackModules.getByProps("TooltipContainer").TooltipContainer, { "position": this.settings.tooltip.bottom ? "bottom" : "top", "text": `${tone.name}` }, currentWord)
-                                }) : currentWord;
-                            })
                         })
                     })
-
                 }
 
             }
@@ -212,8 +200,6 @@
   `-.}   `=._,.-=-._.,  @ @._,
      `._ _,-.   )      _,.-'
         `    G.m-"^m`m'        
-
-    ~ Told you he was around here somewhere ~
 
 
 */
