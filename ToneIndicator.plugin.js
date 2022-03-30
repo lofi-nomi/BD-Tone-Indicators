@@ -2,7 +2,7 @@
  * @name ToneIndicators
  * @author NomadNaomie, Zuri
  * @description Displays the messages tone indicators or by highlighting a tone tag will give you the defintion
- * @version 1.1.2
+ * @version 1.1.3
  * @source https://github.com/NomadNaomie/BD-Tone-Indicators
  * @updateUrl https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js
  * @authorId 188323207793606656, 746871249791221880
@@ -82,10 +82,10 @@
 
 
             /* Added Changlog*/
-            {
-                title: "Added", type: "added",
-                items: ["Fixed message patching", "Fixed Multiline & Content issues",]
-            },
+            // {
+            //   title: "Added", type: "added",
+            //    items: ["Fixed message patching", "Fixed Multiline & Content issues",]
+            // },
 
 
             /* Removed Changelog*/
@@ -96,10 +96,10 @@
 
 
             /* Fixed Changelog*/
-            // {
-            //     title: "Changed", type: "improved",
-            //     items: []
-            // }
+            {
+                title: "Changed", type: "fixed",
+                items: ["Fixed an issue where links that were on multiple lines would get forced onto a single line"]
+            }
 
 
         ],
@@ -159,7 +159,7 @@
                         if (props.message.content && props.message.content.includes("/") && props.message && ret) {
                             if (!ret.props.children[0]) return;
                             ret.props.children[0] = ret.props.children[0].map(child => 
-                                typeof child == "string" ? child.split("\n").map(line => {
+                                typeof child == "string" && child.trim() != "" ? child.split("\n").map(line => {
                                 let current = 0, compile = [];
                                 return line.split(" ").forEach(word => {
                                     if (0 === word.length) return word; 
