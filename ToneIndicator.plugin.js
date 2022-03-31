@@ -96,10 +96,10 @@
 
 
             /* Fixed Changelog*/
-            // {
-            //     title: "Changed", type: "improved",
-            //     items: []
-            // }
+            {
+                title: "Changed", type: "fixed",
+                items: ["Fixed an issue where links that were on multiple lines would get forced onto a single line"]
+            }
 
 
         ],
