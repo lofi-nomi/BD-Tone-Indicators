@@ -2,11 +2,12 @@
  * @name ToneIndicators
  * @author NomadNaomie, Zuri
  * @description Displays the messages tone indicators or by highlighting a tone tag will give you the defintion
- * @version 1.1.4
+ * @version 1.1.5
  * @source https://github.com/NomadNaomie/BD-Tone-Indicators
  * @updateUrl https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js
  * @authorId 188323207793606656, 746871249791221880
  * @authorLink https://twitter.com/NomadNaomie
+ * @invite hUfUtaRbXa
  */
 
  module.exports = (_ => {
@@ -73,7 +74,7 @@
                 {name: 'NomadNaomie', discord_id: '188323207793606656', github_username: 'NomadNaomie', twitter_username: 'NomadNaomie'},
                 {name: 'Zuri', discord_id: '746871249791221880', github_username: 'Zuriix', website: "https://zuriix.github.io/"}
             ],
-            version: '1.1.4',
+            version: '1.1.5',
             description: 'Displays the messages tone indicators or by highlighting a tone tag will give you the defintion',
             github_raw: 'https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js',
             github: 'https://github.com/NomadNaomie/BD-Tone-Indicators'
@@ -82,10 +83,10 @@
 
 
             /* Added Changlog*/
-            // {
-            //     title: "Fixed", type: "added",
-            //     items: ["(Just fixed object issues and new lines, feel free to fix it up, way I've done everything is pretty messy)",]
-            // },
+            {
+                title: "Fixed", type: "added",
+                items: ["Fixed general object issues (with mentions, links, newlines, etc)", "Added support server, please click on the question mark next to the plugin settings if you need any help"]
+            },
 
 
             /* Removed Changelog*/
