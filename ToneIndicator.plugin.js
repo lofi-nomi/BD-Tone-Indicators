@@ -2,7 +2,7 @@
  * @name ToneIndicators
  * @author NomadNaomie, Zuri
  * @description Displays the messages tone indicators or by highlighting a tone tag will give you the defintion
- * @version 1.1.2
+ * @version 1.1.3
  * @source https://github.com/NomadNaomie/BD-Tone-Indicators
  * @updateUrl https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js
  * @authorId 188323207793606656, 746871249791221880
@@ -73,7 +73,7 @@
                 {name: 'NomadNaomie', discord_id: '188323207793606656', github_username: 'NomadNaomie', twitter_username: 'NomadNaomie'},
                 {name: 'Zuri', discord_id: '746871249791221880', github_username: 'Zuriix', website: "https://zuriix.github.io/"}
             ],
-            version: '1.1.2',
+            version: '1.1.3',
             description: 'Displays the messages tone indicators or by highlighting a tone tag will give you the defintion',
             github_raw: 'https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js',
             github: 'https://github.com/NomadNaomie/BD-Tone-Indicators'
@@ -82,10 +82,10 @@
 
 
             /* Added Changlog*/
-            {
-                title: "Added", type: "added",
-                items: ["Fixed message patching", "Fixed Multiline & Content issues",]
-            },
+            // {
+            //     title: "Fixed", type: "added",
+            //     items: ["(Should fix object issues and new lines, feel free to fix it up, way I've done everything is very messy)",]
+            // },
 
 
             /* Removed Changelog*/
@@ -147,8 +147,7 @@
 
 
                 generateBackgroundColor(r,e){let n="0x"+r.substring(1);return"rgba("+[n>>16&255,n>>8&255,255&n].join(",")+`,${e})`}
-                getTone(t) {if(!t)return;let e=toneMap[t.toLowerCase()];if(!e)return{isTag:!1,text:t};let o=document.getElementsByClassName("theme-dark").length>0;this.settings.tonecolor.lightmode=!o;let n=this.settings.tonecolor.autochange?o?e.colors[0]:e.colors[1]:this.settings.tonecolor.lightmode?e.colors[1]:e.colors[0],i={isTag:!0,text:t,description:e.name,tag:BdApi.React.createElement("span",{style:this.settings.background.disabled?{display:"inline-block",color:n}:{"background-color":this.generateBackgroundColor(n,this.settings.background.transparency/100||.1),color:n,display:"inline-block","font-size":"12px","font-weight":"bold","border-radius":"6px","padding-left":"3px","padding-right":"3px","margin-left":"4px"},children:BdApi.React.createElement(WebpackModules.getByProps("TooltipContainer").TooltipContainer,{position:this.settings.tooltip.bottom?"bottom":"top",text:`${e.name}`},t)})};return i}
-                
+                getTone(t){if(!t)return"no input";let e=toneMap[t.toLowerCase()];if(!e)return{isTag:!1,text:t};let o=document.getElementsByClassName("theme-dark").length>0;this.settings.tonecolor.lightmode=!o;let n=this.settings.tonecolor.autochange?o?e.colors[0]:e.colors[1]:this.settings.tonecolor.lightmode?e.colors[1]:e.colors[0],i={isTag:!0,text:t,description:e.name,tag:BdApi.React.createElement("span",{style:this.settings.background.disabled?{display:"inline-block",color:n}:{"background-color":this.generateBackgroundColor(n,this.settings.background.transparency/100||.1),color:n,display:"inline-block","font-size":"12px","font-weight":"bold","border-radius":"6px","padding-left":"3px","padding-right":"3px","margin-left":"4px"},children:BdApi.React.createElement(WebpackModules.getByProps("TooltipContainer").TooltipContainer,{position:this.settings.tooltip.bottom?"bottom":"top",text:`${e.name}`},t)})};return i}
                 getSettingsPanel() { const panel = this.buildSettingsPanel(); return panel.getElement(); }
                 onStop() { BdApi.Patcher.unpatchAll("ToneIndicator"); }
                 onStart() { this.onStop(); this.patchMessageContent(); this.patchContextMenu(); }
@@ -156,18 +155,24 @@
                 patchMessageContent() {
                     const MessageContent = WebpackModules.find(e => e.type && "MessageContent" === e.type.displayName);
                     BdApi.Patcher.after("ToneIndicator", MessageContent, "type", (_, [props], ret) => {
-                        if (props.message.content && props.message.content.includes("/") && props.message && ret) {
-                            if (!ret.props.children[0]) return;
-                            ret.props.children[0] = ret.props.children[0].map(child => 
-                                typeof child == "string" ? child.split("\n").map(line => {
-                                let current = 0, compile = [];
-                                return line.split(" ").forEach(word => {
-                                    if (0 === word.length) return word; 
-                                    current++;
-                                    let splitChar = line.split(" ").length === current ? "\n" : " ", tone = this.getTone(word);
-                                    compile.push(tone.isTag ? tone.tag : tone.text), compile.push(splitChar)
-                                }), compile
-                            }) : child)
+                        if (props.message.content && props.message.content.includes("/") && props.message && ret && ret.props.children[0]) {
+                            let e = ret.props.children[0],
+                                s = [],
+                                p = [];
+                            e.forEach(e => {
+                                "string" == typeof e ? s.push(e.split(/(\n)|( )/gm)) : s.push(e)
+                            }), s.forEach(e => {
+                                "string" == typeof e[0] ? e.forEach(e => {
+                                    if ("" != e && e) {
+                                        let s = !0;
+                                        if (e.includes("/")) {
+                                            let t = this.getTone(e);
+                                            t.isTag && (p.push(t.tag), s = !1)
+                                        }
+                                        s && p.push(e)
+                                    }
+                                }) : p.push(e)
+                            }), ret.props.children[0] = p
                         }
                     })
                 }
@@ -175,16 +180,17 @@
                 patchContextMenu() {
                     ContextMenu.getDiscordMenu("MessageContextMenu").then(menu => {
                         BdApi.Patcher.after("ToneIndicator", menu, "default", (_, [props], ret) => {
-                            let textSelection = document.getSelection().toString().trim();
-                            if(!textSelection) return;
-                            textSelection = textSelection.match("/") ? textSelection : "/" + textSelection;
-                            let tone = this.getTone(textSelection.toLowerCase());
-                            typeof tone != "string" && ret.props.children.push(ContextMenu.buildMenuItem({
-                                type: "separator"
-                            }), ContextMenu.buildMenuItem({
-                                label: "Tone Indicator",
-                                action: () => BdApi.showToast(`${tone.text} - ${tone.description}`)
-                            }))
+                            let t = document.getSelection().toString().trim();
+                            if (t) {
+                                t = t.match("/") ? t : "/" + t;
+                                let e = this.getTone(t.toLowerCase());
+                                "string" != typeof e && ret.props.children.push(ContextMenu.buildMenuItem({
+                                    type: "separator"
+                                }), ContextMenu.buildMenuItem({
+                                    label: "Tone Indicator",
+                                    action: () => BdApi.showToast(`${e.text} - ${e.description}`)
+                                }))
+                            }
                         })
                     })
                 }
