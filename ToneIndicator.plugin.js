@@ -2,7 +2,7 @@
  * @name ToneIndicators
  * @author NomadNaomie, Zuri
  * @description Displays the messages tone indicators or by highlighting a tone tag will give you the defintion
- * @version 1.1.5
+ * @version 1.2.0
  * @source https://github.com/NomadNaomie/BD-Tone-Indicators
  * @updateUrl https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js
  * @authorId 188323207793606656, 746871249791221880
@@ -74,7 +74,7 @@
                 {name: 'NomadNaomie', discord_id: '188323207793606656', github_username: 'NomadNaomie', twitter_username: 'NomadNaomie'},
                 {name: 'Zuri', discord_id: '746871249791221880', github_username: 'Zuriix', website: "https://zuriix.github.io/"}
             ],
-            version: '1.1.5',
+            version: '1.2.0',
             description: 'Displays the messages tone indicators or by highlighting a tone tag will give you the defintion',
             github_raw: 'https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js',
             github: 'https://github.com/NomadNaomie/BD-Tone-Indicators'
