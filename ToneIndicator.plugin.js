@@ -1,11 +1,11 @@
 /**
  * @name ToneIndicators
- * @author NomadNaomie, Zuri
+ * @author NomadNaomie, Zuri, Saltssaumure
  * @description Displays the messages tone indicators or by highlighting a tone tag will give you the defintion
- * @version 1.2.0
+ * @version 1.2.1
  * @source https://github.com/NomadNaomie/BD-Tone-Indicators
  * @updateUrl https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js
- * @authorId 188323207793606656, 746871249791221880
+ * @authorId 188323207793606656, 746871249791221880, 134142022092062720
  * @authorLink https://twitter.com/NomadNaomie
  * @invite hUfUtaRbXa
  */
@@ -72,9 +72,10 @@
             name: 'ToneIndicators',
             authors: [
                 {name: 'NomadNaomie', discord_id: '188323207793606656', github_username: 'NomadNaomie', twitter_username: 'NomadNaomie'},
-                {name: 'Zuri', discord_id: '746871249791221880', github_username: 'Zuriix', website: "https://zuriix.github.io/"}
+                {name: 'Zuri', discord_id: '746871249791221880', github_username: 'Zuriix', website: "https://zuriix.github.io/"},
+                {name: 'Saltssaumure', discord_id: '134142022092062720', github_username: 'Saltssaumure'}
             ],
-            version: '1.2.0',
+            version: '1.2.1',
             description: 'Displays the messages tone indicators or by highlighting a tone tag will give you the defintion',
             github_raw: 'https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js',
             github: 'https://github.com/NomadNaomie/BD-Tone-Indicators'
@@ -144,13 +145,39 @@
     } else {
         return (([Plugin, Zlib]) => {
             const { WebpackModules, ContextMenu } = Zlib;
+            
             return class ToneIndicators extends Plugin {
-
                 generateBackgroundColor(r,e){ let n="0x"+r.substring(1);return"rgba("+[n>>16&255,n>>8&255,255&n].join(",")+`,${e})` }
-                getTone(t){ if(!t)return"no input";let e=toneMap[t.toLowerCase()];if(!e)return{isTag:!1,text:t};let o=document.getElementsByClassName("theme-dark").length>0;this.settings.tonecolor.lightmode=!o;let n=this.settings.tonecolor.autochange?o?e.colors[0]:e.colors[1]:this.settings.tonecolor.lightmode?e.colors[1]:e.colors[0],i={isTag:!0,text:t,description:e.name,tag:BdApi.React.createElement("span",{style:this.settings.background.disabled?{display:"inline-block",color:n}:{"background-color":this.generateBackgroundColor(n,this.settings.background.transparency/100||.1),color:n,display:"inline-block","font-size":"12px","font-weight":"bold","border-radius":"6px","padding-left":"3px","padding-right":"3px","margin-left":"4px"},children:BdApi.React.createElement(WebpackModules.getByProps("TooltipContainer").TooltipContainer,{position:this.settings.tooltip.bottom?"bottom":"top",text:`${e.name}`},t)})};return i }
+                getTone(t){
+                    if (!t) return"no input";
+                    let e = toneMap[t.toLowerCase()];
+                    if (!e) return{isTag:!1,text:t};
+                    let o = document.getElementsByClassName("theme-dark").length>0;
+                    this.settings.tonecolor.lightmode = !o;
+                    let n = this.settings.tonecolor.autochange ? o ? e.colors[0] : e.colors[1] : this.settings.tonecolor.lightmode ? e.colors[1] : e.colors[0],
+                        i = {
+                            isTag: !0,
+                            text: t,
+                            description: e.name,
+                            tag: BdApi.React.createElement("span", {
+                                style: this.settings.background.disabled ? {
+                                    "--tonetag-txt": n
+                                } : {
+                                    "--tonetag-bg": this.generateBackgroundColor(n, this.settings.background.transparency / 100 || .1),
+                                    "--tonetag-txt": n
+                                },
+                                className: this.settings.background.disabled ? "tonetagWithoutBg" : "tonetagWithBg",
+                                children: BdApi.React.createElement(WebpackModules.getByProps("TooltipContainer").TooltipContainer, {
+                                    position: this.settings.tooltip.bottom ? "bottom" : "top",
+                                    text: `${e.name}`
+                                }, t)
+                            })
+                        };
+                    return i
+                    }
                 getSettingsPanel() { const panel = this.buildSettingsPanel(); return panel.getElement(); }
                 onStop() { BdApi.Patcher.unpatchAll("ToneIndicator"); }
-                onStart() { this.onStop(); this.patchMessageContent(); this.patchContextMenu(); }
+                onStart() { this.onStop(); this.patchMessageContent(); this.patchContextMenu(); this.injectCSS();}
 
                 patchMessageContent() {
                     const MessageContent = WebpackModules.find(e => e.type && "MessageContent" === e.type.displayName);
@@ -193,6 +220,26 @@
                             }
                         })
                     })
+                }
+
+                injectCSS() {
+                    BdApi.injectCSS("ToneIndicators", `
+                        .tonetagWithBg {
+                            background-color: var(--tonetag-bg);
+                            color: var(--tonetag-txt);
+                            display: inline-block;
+                            font-size: 0.85em; /* 12px text if base size is 14px */
+                            font-weight: bold;
+                            border-radius: 6px;
+                            padding: 0 3px;
+                            margin-left: 4px;
+                        }
+                        
+                        .tonetagWithoutBg {
+                            display: inline-block;
+                            color: var(--tonetag-txt);
+                        }                    
+                    `)
                 }
 
             }
