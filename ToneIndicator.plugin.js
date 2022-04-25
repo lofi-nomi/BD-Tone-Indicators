@@ -2,7 +2,7 @@
  * @name ToneIndicators
  * @author NomadNaomie, Zuri
  * @description Displays the messages tone indicators or by highlighting a tone tag will give you the defintion
- * @version 1.2.1
+ * @version 1.3.0
  * @source https://github.com/NomadNaomie/BD-Tone-Indicators
  * @updateUrl https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js
  * @authorId 188323207793606656, 746871249791221880
@@ -155,6 +155,19 @@ module.exports = (_ => {
                     { type: "switch", id: "autochange", name: "Automatic Mode", note: "Changes the tone indicators depending on the current color scheme.", value: true }
                 ]
             },
+
+            /* Auto Complete Settings */
+            {
+                type: 'category',
+                id: 'autocomplete',
+                name: 'Auto complete settings',
+                collapsible: true,
+                shown: false,
+                settings: [
+                    { type: "switch", id: "toneautocomplete", name: "Autocomplete Tones", note: "Suggests tones to use when typing a slash", value: true },
+                    { type: "slider", id: "tonelistlimit", name: "Suggestion Limit", note: "How many tone suggestions should be given", min:1, max:36, value: 6, units:" tones"}
+                ]
+            },
         ]
     };
 
@@ -196,7 +209,7 @@ module.exports = (_ => {
                         },
                         queryResults: (channel, guild, content) => {
                             if (!content) return;
-                            let res = findResults(content, true);
+                            let res = findResults(content, true).slice(0, Math.floor(this.settings.autocomplete.tonelistlimit));
                             if (!res) return;
                             return { results: { ret: res.map(x => { return { name: x[1], desc: x[0], color: x[2][false ? 1 : 0] } }) } }; // { name: "serious", desc: "/srs", color: "#6EB5FF" }
                         },
