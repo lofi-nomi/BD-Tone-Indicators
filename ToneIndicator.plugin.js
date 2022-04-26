@@ -165,7 +165,7 @@ module.exports = (_ => {
                 shown: false,
                 settings: [
                     { type: "switch", id: "toneautocomplete", name: "Autocomplete Tones", note: "Suggests tones to use when typing a slash", value: true },
-                    { type: "slider", id: "tonelistlimit", name: "Suggestion Limit", note: "How many tone suggestions should be given", min:1, max:36, value: 6, units:" tones"}
+                    { type: "slider", id: "tonelistlimit", name: "Suggestion Limit", note: "How many tone suggestions should be given", min: 1, max: 36, value: 6, units: " tones" }
                 ]
             },
         ]
@@ -211,7 +211,7 @@ module.exports = (_ => {
                             if (!content) return;
                             let res = findResults(content, true).slice(0, Math.floor(this.settings.autocomplete.tonelistlimit));
                             if (!res) return;
-                            return { results: { ret: res.map(x => { return { name: x[1], desc: x[0], color: x[2][false ? 1 : 0] } }) } }; // { name: "serious", desc: "/srs", color: "#6EB5FF" }
+                            return { results: { ret: res.map(x => { return { name: x[1], desc: x[0], color: x[2][false ? 1 : 0] } }) } };
                         },
                         renderResults: data => {
                             return [BdApi.React.createElement(Autocomplete.Title, { title: ["Tone Indicator"] }),
