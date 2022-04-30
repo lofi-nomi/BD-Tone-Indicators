@@ -2,7 +2,7 @@
  * @name ToneIndicators
  * @author NomadNaomie, Zuri
  * @description Displays the messages tone indicators or by highlighting a tone tag will give you the defintion
- * @version 1.3.1
+ * @version 1.3.2
  * @source https://github.com/NomadNaomie/BD-Tone-Indicators
  * @updateUrl https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js
  * @authorId 188323207793606656, 746871249791221880
@@ -10,7 +10,7 @@
  * @invite hUfUtaRbXa
  */
 
- module.exports = (_ => {
+module.exports = (_ => {
     const toneMap = [
         { tag: ["/j", "joking"], colors: ['#BFFCC6', '#0d7a1a'] },
         { tag: ["/hj", "half joking"], colors: ['#D8FFD6', '#0d7a1a'] },
@@ -68,28 +68,28 @@
                 { name: 'NomadNaomie', discord_id: '188323207793606656', github_username: 'NomadNaomie', twitter_username: 'NomadNaomie' },
                 { name: 'Zuri', discord_id: '746871249791221880', github_username: 'Zuriix', website: "https://zuriix.github.io/" }
             ],
-            version: '1.3.1',
+            version: '1.3.2',
             description: 'Displays the messages tone indicators or by highlighting a tone tag will give you the defintion',
             github_raw: 'https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js',
             github: 'https://github.com/NomadNaomie/BD-Tone-Indicators'
         },
         changelog: [
-            
+
             {
-                title: "1.3.1 - Autocomplete Bug Fix",
+                title: "1.3.2 - Fixed Autocomplete",
                 type: "fixed",
-                items: ["Fixed Autocomplete toggle"]
+                items: ["Fixed Autocomplete not working correctly"]
             },
-            {
-                title: "1.3.0 - Autocomplete",
-                type: "added",
-                items: ["Added new Autocomplete for tone tags"]
-            },
-            {
-                title: "1.3.0 - CSS",
-                type: "improved",
-                items: ["A lot of code cleanup", "Custom CSS support (.tone-tag & .tone-tooltip)"]
-            }
+            // {
+            //     title: "1.3.0 - Autocomplete",
+            //     type: "added",
+            //     items: ["Added new Autocomplete for tone tags"]
+            // },
+            // {
+            //     title: "1.3.0 - CSS",
+            //     type: "improved",
+            //     items: ["A lot of code cleanup", "Custom CSS support (.tone-tag & .tone-tooltip)"]
+            // }
 
 
         ],
@@ -191,12 +191,13 @@
                 }
 
                 injectAutocomplete() {
-                    if (this.settings.autocomplete.toneautocomplete) return;
+                    if (!this.settings.autocomplete.toneautocomplete) return;
                     const Autocomplete = WebpackModules.getByDisplayName('Autocomplete');
-                    WebpackModules.getByProps('AUTOCOMPLETE_OPTIONS').AUTOCOMPLETE_PRIORITY = ["TONES", ...ZLibrary.WebpackModules.getByProps('AUTOCOMPLETE_OPTIONS').AUTOCOMPLETE_PRIORITY.filter(v => v != "TONES")];
+                    WebpackModules.getByProps('AUTOCOMPLETE_OPTIONS').AUTOCOMPLETE_PRIORITY = ["TONES", ...WebpackModules.getByProps('AUTOCOMPLETE_OPTIONS').AUTOCOMPLETE_PRIORITY.filter(v => v != "TONES")];
                     WebpackModules.getByProps('AUTOCOMPLETE_OPTIONS').AUTOCOMPLETE_OPTIONS.TONES = {
                         autoSelect: true,
                         matches: (channel, guild, content) => {
+                            if (!this.settings.autocomplete.toneautocomplete) return false;
                             if (document.getElementsByClassName(ZLibrary.DiscordClasses.Textarea.textArea)[0].innerText.split(' ').length < 2) return false
                             if (content.startsWith('/')) return true;
                             return false;
@@ -208,11 +209,11 @@
                             return { results: { ret: res.map(x => { return { name: x[1], desc: x[0], color: x[2][false ? 1 : 0] } }) } };
                         },
                         renderResults: data => {
-                            return [BdApi.React.createElement(Autocomplete.Title, { title: ["Tone Indicator"] }),
-                                data.results.ret.map((tag, i) => BdApi.React.createElement(Autocomplete.Generic, {
+                            return [React.createElement(Autocomplete.Title, { title: ["Tone Indicator"] }),
+                                data.results.ret.map((tag, i) => React.createElement(Autocomplete.Generic, {
                                     index: i,
-                                    text: BdApi.React.createElement('span', { style: { color: tag.color }, children: tag.name }),
-                                    description: BdApi.React.createElement('span', { style: { color: tag.color }, children: tag.desc.join(' ') }),
+                                    text: React.createElement('span', { style: { color: tag.color }, children: tag.name }),
+                                    description: React.createElement('span', { style: { color: tag.color }, children: tag.desc.join(' ') }),
                                     tag: tag,
                                     onClick: data.onClick,
                                     onHover: data.onHover,
@@ -220,7 +221,7 @@
                                 }))
                             ]
                         },
-                        onSelect: (list, index, _, message) => { return message.insertText(list.ret[index].desc[0]); },
+                        onSelect: data => { return data.options.insertText(data.results.ret[data.index].desc[0]) }
                     };
                 }
 
