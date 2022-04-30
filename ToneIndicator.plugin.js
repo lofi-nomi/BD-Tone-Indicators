@@ -197,6 +197,7 @@ module.exports = (_ => {
                     WebpackModules.getByProps('AUTOCOMPLETE_OPTIONS').AUTOCOMPLETE_OPTIONS.TONES = {
                         autoSelect: true,
                         matches: (channel, guild, content) => {
+                            if (!this.settings.autocomplete.toneautocomplete) return false;
                             if (document.getElementsByClassName(ZLibrary.DiscordClasses.Textarea.textArea)[0].innerText.split(' ').length < 2) return false
                             if (content.startsWith('/')) return true;
                             return false;
