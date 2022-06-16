@@ -2,7 +2,7 @@
  * @name ToneIndicators
  * @author NomadNaomie, Zuri
  * @description Displays the messages tone indicators or by highlighting a tone tag will give you the defintion
- * @version 1.3.2
+ * @version 1.3.3
  * @source https://github.com/NomadNaomie/BD-Tone-Indicators
  * @updateUrl https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js
  * @authorId 188323207793606656, 746871249791221880
@@ -68,7 +68,7 @@ module.exports = (_ => {
                 { name: 'NomadNaomie', discord_id: '188323207793606656', github_username: 'NomadNaomie', twitter_username: 'NomadNaomie' },
                 { name: 'Zuri', discord_id: '746871249791221880', github_username: 'Zuriix', website: "https://zuriix.github.io/" }
             ],
-            version: '1.3.2',
+            version: '1.3.3',
             description: 'Displays the messages tone indicators or by highlighting a tone tag will give you the defintion',
             github_raw: 'https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js',
             github: 'https://github.com/NomadNaomie/BD-Tone-Indicators'
@@ -76,22 +76,16 @@ module.exports = (_ => {
         changelog: [
 
             {
+                title: "1.3.3 - Fixed Whitespace Issue",
+                type: "fixed",
+                items : ["Fixed an issue where tone indicators would not be detected with a space between the slash and indicator"]
+
+            },
+            {
                 title: "1.3.2 - Fixed Autocomplete",
                 type: "fixed",
                 items: ["Fixed Autocomplete not working correctly"]
             },
-            // {
-            //     title: "1.3.0 - Autocomplete",
-            //     type: "added",
-            //     items: ["Added new Autocomplete for tone tags"]
-            // },
-            // {
-            //     title: "1.3.0 - CSS",
-            //     type: "improved",
-            //     items: ["A lot of code cleanup", "Custom CSS support (.tone-tag & .tone-tooltip)"]
-            // }
-
-
         ],
         defaultConfig: [
 
@@ -228,7 +222,7 @@ module.exports = (_ => {
                 patchContextMenu() {
                     ContextMenu.getDiscordMenu("MessageContextMenu").then(menu => {
                         Patcher.after("ToneIndicator", menu, "default", (_, [props], ret) => {
-                            let textSelection = document.getSelection().toString().trim();
+                            let textSelection = document.getSelection().toString().replace("/ ","/").trim();
                             if (textSelection) {
                                 textSelection = textSelection.match("/") ? textSelection : "/" + textSelection;
                                 let textTag = findResults(textSelection.toLowerCase())[0];
@@ -249,7 +243,7 @@ module.exports = (_ => {
                         if (props.message.content && props.message.content.includes("/")) {
                             let finishedProps = [],
                                 modifiedTags = 0;
-                            ret.props.children[0].forEach(x => typeof x === "string" ? x.split(/(\n)/g).map(y => y.split(/( )/g)).forEach(z => z.forEach(a => a.startsWith('/') ? (finishedProps.push(this.createTone(a) || a) && modifiedTags++) : finishedProps.push(a))) : finishedProps.push(x));
+                            ret.props.children[0].forEach(x => typeof x === "string" ? x.replace("/ ","/").split(/(\n)/g).map(y => y.split(/( )/g)).forEach(z => z.forEach(a => a.startsWith('/') ? (finishedProps.push(this.createTone(a) || a) && modifiedTags++) : finishedProps.push(a))) : finishedProps.push(x));
                             if (!finishedProps || !modifiedTags) return;
                             ret.props.children[0] = finishedProps;
                         }
