@@ -12,7 +12,7 @@
 
 module.exports = (_ => {
     var toneMap = []
-    !require("fs").existsSync(require("path").join(BdApi.Plugins.folder, "ToneIndicators.json")) ? require("request").get("https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicators.json", (err, res, body) => {if(!err && res.statusCode === 200 && body){require("fs").writeFileSync(require("path").join(BdApi.Plugins.folder, "ToneIndicators.json"), body);toneMap = JSON.parse(body).toneMap.map(v => { let desc = v.tag.pop(); return [v.tag, desc, v.colors]})}}) : toneMap = JSON.parse(require("fs").readFileSync(require("path").join(BdApi.Plugins.folder, "ToneIndicators.json"))).toneMap.map(v => { let desc = v.tag.pop(); return [v.tag, desc, v.colors]})
+    !require("fs").existsSync(require("path").join(BdApi.Plugins.folder, "ToneIndicators.json")) ? require("request").get("https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicators.json", (err, res, body) => {!err && res.statusCode === 200 && body ? require("fs").writeFile(require("path").join(BdApi.Plugins.folder, "ToneIndicators.json"), body, ()=>{toneMap = JSON.parse(body).toneMap.map(v => { let desc = v.tag.pop(); return [v.tag, desc, v.colors]})}):console.log("Problem Retrieving Tone Map")}): toneMap = JSON.parse(require("fs").readFileSync(require("path").join(BdApi.Plugins.folder, "ToneIndicators.json"))).toneMap.map(v => { let desc = v.tag.pop(); return [v.tag, desc, v.colors]})
     const findResults = (s, furtherSearch, directMatch) => {
         if (directMatch) return toneMap.filter(v => v[0].find(x => x === s))[0];
         let firstSearch = toneMap.filter(v => v[0].find(x => x.startsWith(s)));
