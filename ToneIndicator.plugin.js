@@ -2,7 +2,7 @@
  * @name ToneIndicators
  * @author NomadNaomie, Zuri
  * @description Displays the messages tone indicators or by highlighting a tone tag will give you the defintion
- * @version 1.3.3
+ * @version 1.3.5
  * @source https://github.com/NomadNaomie/BD-Tone-Indicators
  * @updateUrl https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js
  * @authorId 188323207793606656, 746871249791221880
@@ -10,7 +10,7 @@
  * @invite hUfUtaRbXa
  */
 
-module.exports = (_ => {
+ module.exports = (_ => {
     const toneMap = [
         { tag: ["/j", "joking"], colors: ['#BFFCC6', '#0d7a1a'] },
         { tag: ["/hj", "half joking"], colors: ['#D8FFD6', '#0d7a1a'] },
@@ -68,13 +68,18 @@ module.exports = (_ => {
                 { name: 'NomadNaomie', discord_id: '188323207793606656', github_username: 'NomadNaomie', twitter_username: 'NomadNaomie' },
                 { name: 'Zuri', discord_id: '746871249791221880', github_username: 'Zuriix', website: "https://zuriix.github.io/" }
             ],
-            version: '1.3.3',
+            version: '1.3.5',
             description: 'Displays the messages tone indicators or by highlighting a tone tag will give you the defintion',
             github_raw: 'https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js',
             github: 'https://github.com/NomadNaomie/BD-Tone-Indicators'
         },
         changelog: [
+            {
+                title: "1.3.5 - Fixed Another Whitespace Issue",
+                type: "fixed",
+                items : ["Fixed an issue where space between slashes and non-tone indicators would be removed."]
 
+            },
             {
                 title: "1.3.3 - Fixed Whitespace Issue",
                 type: "fixed",
@@ -222,7 +227,7 @@ module.exports = (_ => {
                 patchContextMenu() {
                     ContextMenu.getDiscordMenu("MessageContextMenu").then(menu => {
                         Patcher.after("ToneIndicator", menu, "default", (_, [props], ret) => {
-                            let textSelection = document.getSelection().toString().replace("/ ","/").trim();
+                            let textSelection = document.getSelection().toString().replaceAll("/ ","/").trim();
                             if (textSelection) {
                                 textSelection = textSelection.match("/") ? textSelection : "/" + textSelection;
                                 let textTag = findResults(textSelection.toLowerCase())[0];
@@ -236,14 +241,13 @@ module.exports = (_ => {
                         })
                     })
                 }
-
                 patchMessageContent() {
                     const MessageContent = WebpackModules.find(e => e.type && "MessageContent" === e.type.displayName);
                     Patcher.after("ToneIndicator", MessageContent, "type", (_, [props], ret) => {
                         if (props.message.content && props.message.content.includes("/")) {
                             let finishedProps = [],
                                 modifiedTags = 0;
-                            ret.props.children[0].forEach(x => typeof x === "string" ? x.replace("/ ","/").split(/(\n)/g).map(y => y.split(/( )/g)).forEach(z => z.forEach(a => a.startsWith('/') ? (finishedProps.push(this.createTone(a) || a) && modifiedTags++) : finishedProps.push(a))) : finishedProps.push(x));
+                            ret.props.children[0].forEach(x => typeof x === "string" ? x.split(/(\n)/g).map(y => y.split(/( )/g)).forEach((z) => {z.forEach((e,i) => {e === "/" && z.length > i+2 && findResults("/"+z[i+2],false,true) && (z.splice(i,3,`/${z[i+2]}`))}); z.forEach(a => findResults(a,false,true) ? (finishedProps.push(this.createTone(a) || a) && modifiedTags++) : finishedProps.push(a))}) : finishedProps.push(x));
                             if (!finishedProps || !modifiedTags) return;
                             ret.props.children[0] = finishedProps;
                         }
@@ -274,8 +278,9 @@ module.exports = (_ => {
 })();
 
 /*
-    _,-=._              /|_/|
-    `-.}   `=._,.-=-._.,  @ @._,
-        `._ _,-.   )      _,.-'
-            `    G.m-"^m`m'
+      ":"
+    ___:____     |"\/"|
+  ,'        `.    \  /
+  |  O        \___/  |
+~^~^~^~^~^~^~^~^~^~^~^~^~
 */
