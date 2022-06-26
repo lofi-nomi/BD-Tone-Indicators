@@ -81,6 +81,12 @@
 
             },
             {
+                title: "1.3.4 - Fixed autocomplete overriding",
+                type: "fixed",
+                items : ["Fixed an issue where autocomplete would override the tone indicator text in instances of multiple indicators per tone."]
+
+            },
+            {
                 title: "1.3.3 - Fixed Whitespace Issue",
                 type: "fixed",
                 items : ["Fixed an issue where tone indicators would not be detected with a space between the slash and indicator"]
@@ -205,7 +211,7 @@
                             if (!content) return;
                             let res = findResults(content, true).slice(0, Math.floor(this.settings.autocomplete.tonelistlimit));
                             if (!res) return;
-                            return { results: { ret: res.map(x => { return { name: x[1], desc: x[0], color: x[2][false ? 1 : 0] } }) } };
+                            return { results: { ret: res.map(x => { return { name: x[1], desc: x[0], color: x[2][false ? 1 : 0],content:content } }) } };
                         },
                         renderResults: data => {
                             return [React.createElement(Autocomplete.Title, { title: ["Tone Indicator"] }),
@@ -220,7 +226,7 @@
                                 }))
                             ]
                         },
-                        onSelect: data => { return data.options.insertText(data.results.ret[data.index].desc[0]) }
+                        onSelect: data => {let index = data.results.ret[data.index].desc.findIndex(t => t.startsWith(data.results.ret[data.index].content));return data.options.insertText(data.results.ret[data.index].desc[index == -1 ? 0 : index]) }
                     };
                 }
 
