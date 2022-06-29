@@ -2,7 +2,7 @@
  * @name ToneIndicators
  * @author NomadNaomie, Zuri
  * @description Displays the messages tone indicators or by highlighting a tone tag will give you the defintion
- * @version 1.4.0
+ * @version 1.4.1
  * @source https://github.com/NomadNaomie/BD-Tone-Indicators
  * @updateUrl https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js
  * @authorId 188323207793606656, 746871249791221880
@@ -10,7 +10,7 @@
  * @invite hUfUtaRbXa
  */
 
-module.exports = (_ => {
+ module.exports = (_ => {
     var toneMap = []
     !require("fs").existsSync(require("path").join(BdApi.Plugins.folder, "ToneIndicators.json")) ? require("request").get("https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicators.json", (err, res, body) => {!err && res.statusCode === 200 && body ? require("fs").writeFile(require("path").join(BdApi.Plugins.folder, "ToneIndicators.json"), body, ()=>{toneMap = JSON.parse(body).toneMap.map(v => { let desc = v.tag.pop(); return [v.tag, desc, v.colors]})}):console.log("Problem Retrieving Tone Map")}): toneMap = JSON.parse(require("fs").readFileSync(require("path").join(BdApi.Plugins.folder, "ToneIndicators.json"))).toneMap.map(v => { let desc = v.tag.pop(); return [v.tag, desc, v.colors]})
     const findResults = (s, furtherSearch, directMatch) => {
@@ -31,20 +31,16 @@ module.exports = (_ => {
                 { name: 'NomadNaomie', discord_id: '188323207793606656', github_username: 'NomadNaomie', twitter_username: 'NomadNaomie' },
                 { name: 'Zuri', discord_id: '746871249791221880', github_username: 'Zuriix', website: "https://zuriix.github.io/" }
             ],
-            version: '1.4.0',
+            version: '1.4.1',
             description: 'Displays the messages tone indicators or by highlighting a tone tag will give you the defintion',
             github_raw: 'https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js',
             github: 'https://github.com/NomadNaomie/BD-Tone-Indicators'
         },
         changelog: [
-            { title: '1.4.0', type: "added", items: ['Tone tags are no longer hard coded, find ToneIndicators.json in your plugin folder to change them.'] },
-            {
-                title: "1.3.2 - Fixed Autocomplete",
-                type: "fixed",
-                items: ["Fixed Autocomplete not working correctly"]
+            {   title: '1.4.1', 
+                type: "added", 
+                items: ['Tone tags are no longer hard coded, find ToneIndicators.json in your plugin folder to change them.'] 
             },
-
-
         ],
         defaultConfig: [
 
@@ -159,7 +155,7 @@ module.exports = (_ => {
                             if (!content) return;
                             let res = findResults(content, true).slice(0, Math.floor(this.settings.autocomplete.tonelistlimit));
                             if (!res) return;
-                            return { results: { ret: res.map(x => { return { name: x[1], desc: x[0], color: x[2][false ? 1 : 0] } }) } };
+                            return { results: { ret: res.map(x => { return { name: x[1], desc: x[0], color: x[2][false ? 1 : 0],content:content } }) } };
                         },
                         renderResults: data => {
                             return [React.createElement(Autocomplete.Title, { title: ["Tone Indicator"] }),
@@ -174,14 +170,14 @@ module.exports = (_ => {
                             }))
                             ]
                         },
-                        onSelect: data => { return data.options.insertText(data.results.ret[data.index].desc[0]) }
+                        onSelect: data => {let index = data.results.ret[data.index].desc.findIndex(t => t.startsWith(data.results.ret[data.index].content));return data.options.insertText(data.results.ret[data.index].desc[index == -1 ? 0 : index]) }
                     };
                 }
 
                 patchContextMenu() {
                     ContextMenu.getDiscordMenu("MessageContextMenu").then(menu => {
                         Patcher.after("ToneIndicator", menu, "default", (_, [props], ret) => {
-                            let textSelection = document.getSelection().toString().trim();
+                            let textSelection = document.getSelection().toString().replaceAll("/ ","/").trim();
                             if (textSelection) {
                                 textSelection = textSelection.match("/") ? textSelection : "/" + textSelection;
                                 let textTag = findResults(textSelection.toLowerCase())[0];
@@ -195,14 +191,13 @@ module.exports = (_ => {
                         })
                     })
                 }
-
                 patchMessageContent() {
                     const MessageContent = WebpackModules.find(e => e.type && "MessageContent" === e.type.displayName);
                     Patcher.after("ToneIndicator", MessageContent, "type", (_, [props], ret) => {
                         if (props.message.content && props.message.content.includes("/")) {
                             let finishedProps = [],
                                 modifiedTags = 0;
-                            ret.props.children[0].forEach(x => typeof x === "string" ? x.split(/(\n)/g).map(y => y.split(/( )/g)).forEach(z => z.forEach(a => a.startsWith('/') ? (finishedProps.push(this.createTone(a) || a) && modifiedTags++) : finishedProps.push(a))) : finishedProps.push(x));
+                            ret.props.children[0].forEach(x => typeof x === "string" ? x.split(/(\n)/g).map(y => y.split(/( )/g)).forEach((z) => {z.forEach((e,i) => {e === "/" && z.length > i+2 && findResults("/"+z[i+2],false,true) && (z.splice(i,3,`/${z[i+2]}`))}); z.forEach(a => findResults(a,false,true) ? (finishedProps.push(this.createTone(a) || a) && modifiedTags++) : finishedProps.push(a))}) : finishedProps.push(x));
                             if (!finishedProps || !modifiedTags) return;
                             ret.props.children[0] = finishedProps;
                         }
@@ -233,8 +228,9 @@ module.exports = (_ => {
 })();
 
 /*
-    _,-=._              /|_/|
-    `-.}   `=._,.-=-._.,  @ @._,
-        `._ _,-.   )      _,.-'
-            `    G.m-"^m`m'
+      ":"
+    ___:____     |"\/"|
+  ,'        `.    \  /
+  |  O        \___/  |
+~^~^~^~^~^~^~^~^~^~^~^~^~
 */
