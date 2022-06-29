@@ -161,7 +161,7 @@
                             if (!content) return;
                             let res = findResults(content, true).slice(0, Math.floor(this.settings.autocomplete.tonelistlimit));
                             if (!res) return;
-                            return { results: { ret: res.map(x => { return { name: x[1], desc: x[0], color: x[2][false ? 1 : 0],content:content } }) } };
+                            return { results: { ret: res.map(x => { return { name: x[1], desc: x[0], color: x[2][this.settings.tonecolor.lightmode ? 1 : 0],content:content } }) } };
                         },
                         renderResults: data => {
                             return [React.createElement(Autocomplete.Title, { title: ["Tone Indicator"] }),
