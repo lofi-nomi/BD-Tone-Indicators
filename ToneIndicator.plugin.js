@@ -2,7 +2,7 @@
  * @name ToneIndicators
  * @author NomadNaomie, Zuri
  * @description Displays the messages tone indicators or by highlighting a tone tag will give you the defintion
- * @version 1.3.5
+ * @version 1.3.6
  * @source https://github.com/NomadNaomie/BD-Tone-Indicators
  * @updateUrl https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js
  * @authorId 188323207793606656, 746871249791221880
@@ -49,6 +49,7 @@
         { tag: ["/nsx", "/ns", "/nx", "non-sexual intent"], colors: ['#FFBEBC', '#7a201d'] },
         { tag: ["/pc", "/pos", "positive connotation"], colors: ['#84D3B2', '#0e9e62'] },
         { tag: ["/nc", "/neg", "negative connotation"], colors: ['#FFCCBB', '#87452f'] },
+        { tag: ["/af", "/aff", "affectionate connotation"], colors: ['#ff5eec', '#fa9bef'] },
     ].map(v => { let desc = v.tag.pop(); return [v.tag, desc, v.colors] })
     const findResults = (s, furtherSearch, directMatch) => {
         if (directMatch) return toneMap.filter(v => v[0].find(x => x === s))[0];
@@ -68,12 +69,18 @@
                 { name: 'NomadNaomie', discord_id: '188323207793606656', github_username: 'NomadNaomie', twitter_username: 'NomadNaomie' },
                 { name: 'Zuri', discord_id: '746871249791221880', github_username: 'Zuriix', website: "https://zuriix.github.io/" }
             ],
-            version: '1.3.5',
+            version: '1.3.6',
             description: 'Displays the messages tone indicators or by highlighting a tone tag will give you the defintion',
             github_raw: 'https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js',
             github: 'https://github.com/NomadNaomie/BD-Tone-Indicators'
         },
         changelog: [
+            {
+                title: "1.3.6 - Affection Tone Added",
+                type: "Added",
+                items : ["Added /aff and /af for affectionate tone."]
+
+            },
             {
                 title: "1.3.5 - Fixed Another Whitespace Issue",
                 type: "fixed",
