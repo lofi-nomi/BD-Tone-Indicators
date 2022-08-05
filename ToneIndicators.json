@@ -1,4 +1,6 @@
 {
+    "auto_update": true,
+    "version": 1,
     "toneMap":[
         { "tag": ["/j", "joking"], "colors": ["#BFFCC6", "#0d7a1a"] },
         { "tag": ["/hj", "half joking"], "colors": ["#D8FFD6", "#0d7a1a"] },
@@ -36,6 +38,7 @@
         { "tag": ["/sx", "/x", "sexual intent"], "colors": ["#FF9CEE", "#780b65"] },
         { "tag": ["/nsx", "/ns", "/nx", "non-sexual intent"], "colors": ["#FFBEBC", "#7a201d"] },
         { "tag": ["/pc", "/pos", "positive connotation"], "colors": ["#84D3B2", "#0e9e62"] },
-        { "tag": ["/nc", "/neg", "negative connotation"], "colors": ["#FFCCBB", "#87452f"] }
+        { "tag": ["/nc", "/neg", "negative connotation"], "colors": ["#FFCCBB", "#87452f"] },
+        { "tag": ["/af", "/aff", "affectionate connotation"], "colors": ["#ff5eec", "#fa9bef"] }
     ]
 }
