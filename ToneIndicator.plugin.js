@@ -2,7 +2,7 @@
  * @name ToneIndicators
  * @author NomadNaomie, Zuri
  * @description Displays the messages tone indicators or by highlighting a tone tag will give you the defintion
- * @version 1.4.1
+ * @version 1.6.0
  * @source https://github.com/NomadNaomie/BD-Tone-Indicators
  * @updateUrl https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js
  * @authorId 188323207793606656, 746871249791221880
@@ -12,7 +12,23 @@
 
  module.exports = (_ => {
     var toneMap = []
-    !require("fs").existsSync(require("path").join(BdApi.Plugins.folder, "ToneIndicators.json")) ? require("request").get("https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicators.json", (err, res, body) => {!err && res.statusCode === 200 && body ? require("fs").writeFile(require("path").join(BdApi.Plugins.folder, "ToneIndicators.json"), body, ()=>{toneMap = JSON.parse(body).toneMap.map(v => { let desc = v.tag.pop(); return [v.tag, desc, v.colors]})}):console.log("Problem Retrieving Tone Map")}): toneMap = JSON.parse(require("fs").readFileSync(require("path").join(BdApi.Plugins.folder, "ToneIndicators.json"))).toneMap.map(v => { let desc = v.tag.pop(); return [v.tag, desc, v.colors]})
+    fetch("https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicators.json")
+        .then(res => res.json()).then(res => {
+            if (BdApi.loadData("ToneIndicators", "toneMap")) {
+                storedMap = BdApi.loadData("ToneIndicators", "toneMap")
+                if (storedMap.auto_update) {
+                    if (storedMap.version !== res.version) {
+                        BdApi.saveData("ToneIndicators", "toneMap", res)
+                    }
+                }
+            } else {
+                BdApi.saveData("ToneIndicators", "toneMap", res)
+            }
+        }).then(() => {
+            console.log(BdApi.loadData("ToneIndicators", "toneMap"))
+            toneMap = BdApi.loadData("ToneIndicators", "toneMap").toneMap.map(v => { let desc = v.tag.pop(); return [v.tag, desc, v.colors] })
+            console.log(toneMap)
+        });
     const findResults = (s, furtherSearch, directMatch) => {
         if (directMatch) return toneMap.filter(v => v[0].find(x => x === s))[0];
         let firstSearch = toneMap.filter(v => v[0].find(x => x.startsWith(s)));
@@ -23,7 +39,6 @@
         }
         return null;
     }
-
     const config = {
         info: {
             name: 'ToneIndicators',
@@ -31,15 +46,16 @@
                 { name: 'NomadNaomie', discord_id: '188323207793606656', github_username: 'NomadNaomie', twitter_username: 'NomadNaomie' },
                 { name: 'Zuri', discord_id: '746871249791221880', github_username: 'Zuriix', website: "https://zuriix.github.io/" }
             ],
-            version: '1.4.1',
+            version: '1.6.0',
             description: 'Displays the messages tone indicators or by highlighting a tone tag will give you the defintion',
             github_raw: 'https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js',
             github: 'https://github.com/NomadNaomie/BD-Tone-Indicators'
         },
         changelog: [
-            {   title: '1.4.1', 
-                type: "added", 
-                items: ['Tone tags are no longer hard coded, find ToneIndicators.json in your plugin folder to change them.'] 
+            {
+                title: '1.6.0',
+                type: "added",
+                items: ['Tone tags are no longer hard coded, find ToneIndicators.json in your plugin folder to change them.']
             },
         ],
         defaultConfig: [
@@ -155,7 +171,7 @@
                             if (!content) return;
                             let res = findResults(content, true).slice(0, Math.floor(this.settings.autocomplete.tonelistlimit));
                             if (!res) return;
-                            return { results: { ret: res.map(x => { return { name: x[1], desc: x[0], color: x[2][false ? 1 : 0],content:content } }) } };
+                            return { results: { ret: res.map(x => { return { name: x[1], desc: x[0], color: x[2][this.settings.tonecolor.lightmode ? 1 : 0], content: content } }) } };
                         },
                         renderResults: data => {
                             return [React.createElement(Autocomplete.Title, { title: ["Tone Indicator"] }),
@@ -170,14 +186,14 @@
                             }))
                             ]
                         },
-                        onSelect: data => {let index = data.results.ret[data.index].desc.findIndex(t => t.startsWith(data.results.ret[data.index].content));return data.options.insertText(data.results.ret[data.index].desc[index == -1 ? 0 : index]) }
+                        onSelect: data => { let index = data.results.ret[data.index].desc.findIndex(t => t.startsWith(data.results.ret[data.index].content)); return data.options.insertText(data.results.ret[data.index].desc[index == -1 ? 0 : index]) }
                     };
                 }
 
                 patchContextMenu() {
                     ContextMenu.getDiscordMenu("MessageContextMenu").then(menu => {
                         Patcher.after("ToneIndicator", menu, "default", (_, [props], ret) => {
-                            let textSelection = document.getSelection().toString().replaceAll("/ ","/").trim();
+                            let textSelection = document.getSelection().toString().replaceAll("/ ", "/").trim();
                             if (textSelection) {
                                 textSelection = textSelection.match("/") ? textSelection : "/" + textSelection;
                                 let textTag = findResults(textSelection.toLowerCase())[0];
@@ -197,7 +213,7 @@
                         if (props.message.content && props.message.content.includes("/")) {
                             let finishedProps = [],
                                 modifiedTags = 0;
-                            ret.props.children[0].forEach(x => typeof x === "string" ? x.split(/(\n)/g).map(y => y.split(/( )/g)).forEach((z) => {z.forEach((e,i) => {e === "/" && z.length > i+2 && findResults("/"+z[i+2],false,true) && (z.splice(i,3,`/${z[i+2]}`))}); z.forEach(a => findResults(a,false,true) ? (finishedProps.push(this.createTone(a) || a) && modifiedTags++) : finishedProps.push(a))}) : finishedProps.push(x));
+                            ret.props.children[0].forEach(x => typeof x === "string" ? x.split(/(\n)/g).map(y => y.split(/( )/g)).forEach((z) => { z.forEach((e, i) => { e === "/" && z.length > i + 2 && findResults("/" + z[i + 2], false, true) && (z.splice(i, 3, `/${z[i + 2]}`)) }); z.forEach(a => findResults(a, false, true) ? (finishedProps.push(this.createTone(a) || a) && modifiedTags++) : finishedProps.push(a)) }) : finishedProps.push(x));
                             if (!finishedProps || !modifiedTags) return;
                             ret.props.children[0] = finishedProps;
                         }
