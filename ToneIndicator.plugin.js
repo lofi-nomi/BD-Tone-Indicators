@@ -2,7 +2,7 @@
  * @name ToneIndicators
  * @author NomadNaomie, Zuri
  * @description Displays the messages tone indicators or by highlighting a tone tag will give you the defintion
- * @version 1.6.0
+ * @version 1.6.1
  * @source https://github.com/NomadNaomie/BD-Tone-Indicators
  * @updateUrl https://raw.githubusercontent.com/NomadNaomie/BD-Tone-Indicators/main/ToneIndicator.plugin.js
  * @authorId 188323207793606656, 746871249791221880
@@ -25,9 +25,48 @@
                 BdApi.saveData("ToneIndicators", "toneMap", res)
             }
         }).then(() => {
-            console.log(BdApi.loadData("ToneIndicators", "toneMap"))
             toneMap = BdApi.loadData("ToneIndicators", "toneMap").toneMap.map(v => { let desc = v.tag.pop(); return [v.tag, desc, v.colors] })
-            console.log(toneMap)
+        }).catch((err) => {
+            toneMap = [
+                { tag: ["/j", "joking"], colors: ['#BFFCC6', '#0d7a1a'] },
+                { tag: ["/hj", "half joking"], colors: ['#D8FFD6', '#0d7a1a'] },
+                { tag: ["/srs", "serious"], colors: ['#6EB5FF', '#29629e'] },
+                { tag: ["/nsrs", "not serious"], colors: ['#F6A6FF', '#a639b3'] },
+                { tag: ["/lh", "light hearted"], colors: ['#ACE6FF', '#217ca3'] },
+                { tag: ["/ij", "inside joke"], colors: ['#E7FFAC', '#6d9114'] },
+                { tag: ["/ref", "reference"], colors: ['#AFCBFF', '#144091'] },
+                { tag: ["/t", "teasing"], colors: ['#FFFFD1', '##c7c710'] },
+                { tag: ["/nm", "not mad"], colors: ['#DCD3FF', '#3d1bc2'] },
+                { tag: ["/lu", "a little upset"], colors: ['#FFF5BA', '#8f7c0b'] },
+                { tag: ["/nf", "not forced"], colors: ['#DEFDE0', '#089611'] },
+                { tag: ["/nbh", "nobody here"], colors: ['#FCF7DE', '#7a6600'] },
+                { tag: ["/nsb", "not subtweeting"], colors: ['#DEF3FD', '#00405e'] },
+                { tag: ["/nay", "not at you"], colors: ['#F0DEFD', '#7a02d1'] },
+                { tag: ["/nav", "not a vent"], colors: ['#00cc99', '#0aAB31'] },
+                { tag: ["/ay", "at you"], colors: ['#FDDFDF', '#8c0707'] },
+                { tag: ["/nbr", "not being rude"], colors: ['#9ADBB3', '#048a38'] },
+                { tag: ["/ot", "off-topic"], colors: ['#E7FFAC', '#476108'] },
+                { tag: ["/th", "threat"], colors: ['#FFABAB', '#b50e0e'] },
+                { tag: ["/cb", "clickbait"], colors: ['#F3FFE3', '#569106'] },
+                { tag: ["/f", "fake"], colors: ['#85E3FF', '#066480'] },
+                { tag: ["/c", "copypasta"], colors: ['#DBFFD6', '#1f8c0f'] },
+                { tag: ["/m", "metaphor / metaphorically"], colors: ['#FBE4FF', '#750987'] },
+                { tag: ["/li", "literal / literally"], colors: ['#BED2FE', '#0a328a'] },
+                { tag: ["/hyp", "hyperbole"], colors: ['#F6F9FF', '#2a3c5e'] },
+                { tag: ["/p", "platonic"], colors: ['#B5CCFE', '#2260e6'] },
+                { tag: ["/r", "romantic"], colors: ['#FFCCF9', '#bf19ac'] },
+                { tag: ["/a", "alterous"], colors: ['#C7D9FE', '#1458e3'] },
+                { tag: ["/neu", "neutral / neutral connotation"], colors: ['#E3ECFF', '#315ab0'] },
+                { tag: ["/g", "/gen", "/genq", "genuine / genuine question"], colors: ['#AFF8D8', '#089c5b'] },
+                { tag: ["/s", "/sarc", "sarcastic / sarcasm"], colors: ['#FFCBC1', '#cf3d21'] },
+                { tag: ["/l", "/ly", "lyrics"], colors: ['#97A2FF', '#0e1873'] },
+                { tag: ["/rt", "/rh", "rhetorical question"], colors: ['#A79AFF', '#1c099c'] },
+                { tag: ["/sx", "/x", "sexual intent"], colors: ['#FF9CEE', '#780b65'] },
+                { tag: ["/nsx", "/ns", "/nx", "non-sexual intent"], colors: ['#FFBEBC', '#7a201d'] },
+                { tag: ["/pc", "/pos", "positive connotation"], colors: ['#84D3B2', '#0e9e62'] },
+                { tag: ["/nc", "/neg", "negative connotation"], colors: ['#FFCCBB', '#87452f'] },
+                { tag: ["/af", "/aff", "affectionate connotation"], colors: ['#ff5eec', '#fa9bef'] }
+            ].map(v => { let desc = v.tag.pop(); return [v.tag, desc, v.colors] })
         });
     const findResults = (s, furtherSearch, directMatch) => {
         if (directMatch) return toneMap.filter(v => v[0].find(x => x === s))[0];
@@ -53,7 +92,12 @@
         },
         changelog: [
             {
-                title: '1.6.0',
+                title: '1.6.2',
+                type: "added",
+                items: ['Fallback list of tones']
+            },
+            {
+                title: '1.6.1',
                 type: "added",
                 items: ['Tone tags are no longer hard coded, find ToneIndicators.json in your plugin folder to change them.']
             },
